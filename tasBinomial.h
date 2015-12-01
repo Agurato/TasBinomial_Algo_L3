@@ -4,13 +4,15 @@ typedef struct noeud{
     int cle;
     struct noeud *pere, *pfg, *pfd;
 }*ArbreBinomial;
+
 typedef struct cellule{
     A_Binomial A;
     struct cellule *suivant;
 }*TasBinomial;
 
 
-ArbreBinomial Creer_Arbre_Binomial();
+ArbreBinomial CreerArbreBinomial();
+TasBinomial CreerTasBinomial();
 ArbreBinomial Inserer(ArbreBinomial, int);
 ArbreBinomial Lier(ArbreBinomial, ArbreBinomial);
 TasBinomial AjouterCle(TasBinomial, ArbreBinomial);
