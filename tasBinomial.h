@@ -1,4 +1,3 @@
-typedef {Faux, Vrai} Booleen;
 typedef struct noeud{
     int degre;
     int cle;
@@ -6,7 +5,7 @@ typedef struct noeud{
 }*ArbreBinomial;
 
 typedef struct cellule{
-    A_Binomial A;
+    ArbreBinomial A;
     struct cellule *suivant;
 }*TasBinomial;
 
@@ -21,4 +20,5 @@ TasBinomial Fusionner(TasBinomial, TasBinomial);
 TasBinomial Union(TasBinomial);
 TasBinomial SupprimerMinTas(TasBinomial);
 TasBinomial DecrementerCle(TasBinomial, ArbreBinomial);
-Booleen TasBinomialVide(TasBinomial);
+int TasBinomialVide(TasBinomial);
+void AfficherTas(TasBinomial T);
