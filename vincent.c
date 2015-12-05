@@ -3,11 +3,125 @@
 #include "vincent.h"
 
 int main(int argc, char const *argv[]) {
+	/*
 	BinomialTree T = insertKey(NULL, 1);
-
 	printf("T->key=%d / T->degree=%d\n", T->key, T->degree);
+	*/
+
+
 
 	return 0;
+}
+
+BHeap createBHeap() {
+	BHeap heap = malloc(sizeof(struct heapNode));
+	heap->degree = 0;
+	heap->key = 0;
+	heap->father = NULL;
+	heap->son = NULL;
+	heap->brother = NULL;
+	return heap;
+}
+
+BHeap mergeBHeaps(BHeap H1, BHeap H2) {
+	BHeap heap = createBHeap();
+	while((H1 != NULL) && (H2 != NULL)) {
+		if(H1->degree == H2->degree) {
+			heap = insertBHeap(heap, H1);
+			heap = insertBHeap(heap, H2);
+			H1 = H1->brother;
+			H2 = H2->brother;
+		}
+		else if(H1->degree < H2->degree) {
+			heap = insertBHeap(heap, H1);
+			H1 = H1->brother;
+		}
+		else {
+			heap = insertBHeap(heap, H2);
+			H2 = H2->brother;
+		}
+	}
+
+	while(H1 != NULL) {
+		heap = insertBHeap(heap, H1);
+		H1 = H1->brother;
+	}
+	while(H2 != NULL) {
+		heap = insertBHeap(heap, H2);
+		H2 = H2->brother;
+	}
+
+	return heap;
+}
+
+BHeap joinBHeaps(BHeap H1, BHeap H2) {
+	BHeap heap = createBHeap();
+	BHeap prev, next, x;
+
+	heap = mergeBHeaps(H1, H2);
+
+	if(heap != NULL) {
+		prev = NULL;
+		x = heap;
+		next = x->brother;
+
+		while(next != NULL) {
+			if((x->degree != next->degree) || ((next->brother != NULL) && (next->brother->degree == x->degree))) {
+				prev = x;
+				x = next;
+			}
+			else if(x->key <= next->key) {
+				x->brother = next->brother;
+				linkBHeaps(next, x);
+			}
+			else {
+				if(prev == NULL) {
+					heap = next;
+				}
+				else {
+					prev->brother = next;
+				}
+				linkBHeaps(x, next);
+				x = next;
+			}
+			next = x->brother;
+		}
+	}
+
+	return heap;
+}
+
+BHeap insertBHeap(BHeap H1, BHeap H2) {
+	BHeap heap = createBHeap();
+	H2->father = NULL;
+	H2->son = NULL;
+	H2->brother = NULL;
+	H2->degree = 0;
+
+	heap->brother = heap;
+	heap = H2;
+	heap = joinBHeaps(heap, H1);
+
+	return heap;
+}
+
+BHeap linkBHeaps(BHeap H1, BHeap H2) {
+	if(H1->key < H2->key) {
+		H2->brother = H1->son;
+		H2->father = H1;
+		H1->son = H2;
+		H1->degree ++;
+
+		return H1;
+	}
+	else {
+		H1->brother = H2->son;
+		H1->father = H2;
+		H2->son = H1;
+		H2->degree ++;
+
+		return H2;
+	}
 }
 
 BinomialTree createTree() {
@@ -35,7 +149,6 @@ BinomialTree insertKey(BinomialTree T, int key) {
 	if(T == NULL) {
 		T = createTree();
 		T->key = key;
-		T->degree ++;
 	}
 	else {
 
@@ -62,4 +175,52 @@ BinomialTree linkTrees(BinomialTree T1, BinomialTree T2) {
 
 		return T2;
 	}
+}
+
+BinomialHeap mergeHeaps(BinomialHeap H1, BinomialHeap H2) {
+	BinomialHeap heap = createHeap();
+
+	while((H1 != NULL) && (H2 != NULL)) {
+		if(H1->tree->degree == H2->tree->degree) {
+			heap = insertHeap(heap, H1);
+			heap = insertHeap(heap, H2);
+
+			H1->tree = H1->tree->rightBrother;
+			H2->tree = H2->tree->rightBrother;
+		}
+		else if(H1->tree->degree < H2->tree->degree) {
+			heap = insertHeap(heap, H1);
+			H1->tree = H1->tree->rightBrother;
+		}
+		else {
+			heap = insertHeap(heap, H2);
+			H2->tree = H2->tree->rightBrother;
+		}
+	}
+
+	while (H1 != NULL) {
+		heap = insertHeap(heap, H1);
+		H1->tree = H1->tree->rightBrother;
+	}
+
+	return heap;
+}
+
+BinomialHeap joinHeaps(BinomialHeap H1, BinomialHeap H2) {
+	return H1;
+}
+
+BinomialHeap insertHeap(BinomialHeap H1, BinomialHeap H2) {
+	BinomialHeap heap = createHeap();
+	heap->tree = createTree();
+	H2->tree->father = NULL;
+	H2->tree->leftSon = NULL;
+	H2->tree->rightBrother = NULL;
+	H2->tree->degree = 0;
+	heap->next = heap;
+	heap->tree = H2->tree;
+
+	heap = joinHeaps(heap, H1);
+
+	return heap;
 }
