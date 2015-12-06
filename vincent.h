@@ -15,6 +15,8 @@ typedef struct heapNode {
 	struct heapNode *father, *son, *brother;
 } *BHeap;
 
+typedef enum {false, true} Boolean;
+
 BinomialTree createTree();
 BinomialHeap createHeap();
 BinomialTree insertKey(BinomialTree T, int key);
@@ -22,6 +24,8 @@ BinomialTree linkTrees(BinomialTree T1, BinomialTree T2);
 BinomialHeap mergeHeaps(BinomialHeap H1, BinomialHeap H2);
 BinomialHeap joinHeaps(BinomialHeap H1, BinomialHeap H2);
 BinomialHeap insertHeap(BinomialHeap H, BinomialHeap x);
+void displayTree(BinomialTree T, int current);
+void displayHeap(BinomialHeap H);
 
 BHeap createBHeap();
 BHeap mergeBHeaps(BHeap H1, BHeap H2);
