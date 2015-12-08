@@ -6,8 +6,16 @@
 int main(int argc, char *argv[]){
 
 	ArbreBinomial A = CreerArbreBinomial();
-	int cle;
+	ArbreBinomial B = CreerArbreBinomial();
+	ArbreBinomial C = CreerArbreBinomial();
 	A = Inserer(A,5);
-	printf("%d\n",A->cle);
+	A = Inserer(A,2);
+
+	B = Inserer(A,17);
+	B = Inserer(B,1);
+
+	A = Union(A,B);
+	C = ExtraireMin(A);
+	printf("%d\n",C->cle);
     return 0;
 }

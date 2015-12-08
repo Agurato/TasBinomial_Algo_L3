@@ -31,30 +31,20 @@ ArbreBinomial Inserer(ArbreBinomial T, int cle){
  * Fonctionne
  */
 ArbreBinomial Lier(ArbreBinomial A, ArbreBinomial B){
-    B->pere = A;
-    B->pfd = A->pfg;
-    A->pfg = B;
-    A->degre++;
-    return A;
+	if(A->cle <= B->cle){
+    	B->pere = A;
+    	B->pfd = A->pfg;
+  		A->pfg = B;
+    	A->degre++;
+    	return A;
+	}else{
+		A->pere = B;
+    	A->pfd = B->pfg;
+  		B->pfg = A;
+    	B->degre++;
+    	return B;
+	}
 }
-
-ArbreBinomial ExtraireMin(ArbreBinomial T){
-    ArbreBinomial B, C;
-    int cleMin = 10000000;
-    B = T;
-    C = T;
-        while(B!=NULL){
-            if(B->cle < cleMin){
-                cleMin = B->cle;
-                C = B;
-            }
-            B = B->pfd;
-        }
-    return C;
-}
-
-
-
 
 ArbreBinomial Fusionner(ArbreBinomial TasUn, ArbreBinomial TasDeux){
     ArbreBinomial T = CreerArbreBinomial();
@@ -131,4 +121,19 @@ ArbreBinomial DecrementerCle(ArbreBinomial T, ArbreBinomial x, int  k){
 		}
 		return T;
 	}
+}
+
+ArbreBinomial ExtraireMin(ArbreBinomial A){
+	ArbreBinomial B,C;
+	int cle = 10000000;
+	B = A;
+	C = A;
+	while(B != NULL){
+		if(B->cle < cle){
+			cle = B->cle;
+			C = B;
+		}
+		B = B->pfd;
+	}
+	return C;
 }
