@@ -2,32 +2,27 @@
 #include <stdlib.h>
 #include "tasBinomial.h"
 
-/*Fonctionne*/
 ArbreBinomial CreerArbreBinomial(){
     ArbreBinomial A;
-    A = malloc(sizeof(ArbreBinomial));
+    A = malloc(sizeof(struct noeud));
     A->degre = 0;
     A->cle = 0;
     A->pere = A->pfg = A->pfd = NULL;
     return A;
 }
 
-TasBinomial CreerTasBinomial(){
-    TasBinomial T;
-    T = malloc(sizeof(TasBinomial));
-    T->A = CreerArbreBinomial();
-    T->suivant = NULL;
-    return T;
-}
-
 /*Fonctionne*/
-/*VOir s'il ne faut pas vérifier le cas que A non vide*/
-ArbreBinomial Inserer(ArbreBinomial A, int cle){
-    A->pere = A->pfd = A->pfg = NULL;
-    A->cle = cle;
-    A->degre = 0;
-
-    return A;
+/*Voir s'il ne faut pas vérifier le cas que A non vide*/
+ArbreBinomial Inserer(ArbreBinomial T, int cle){
+	ArbreBinomial T1 = CreerArbreBinomial();
+	ArbreBinomial x = CreerArbreBinomial();
+	x->pere = NULL;
+	x->pfg = NULL;
+	x->pfd = NULL;
+	x->degre = 0;
+	x->cle = cle;
+	T1 = Union(x,T);
+    return T1;
 }
 
 /* On lie deux arbres binomiaux
@@ -43,45 +38,11 @@ ArbreBinomial Lier(ArbreBinomial A, ArbreBinomial B){
     return A;
 }
 
-/* On insère dans le tas l'arbre,
- * On vérifie que l'arbre à le même degré que le suivant
- *      Si oui on les lies
- *      Si non on laisse ainsi
- * Puis on revérifie les autres
- */
-TasBinomial AjouterCle(TasBinomial Tas, ArbreBinomial ArbreB){
-	if(!TasBinomialVide(Tas)){
-
-		TasBinomial TasDeux = CreerTasBinomial();
-
-		TasDeux = AjouterCle(TasDeux,ArbreB);
-		TasDeux->suivant = Tas;
-		Tas = NULL;
-		printf("Tas->A->cle = %d\n",TasDeux->A->cle);
-
-		TasDeux->suivant = TasDeux->suivant->suivant;
-		while(TasDeux->suivant != NULL){
-			TasDeux->suivant = TasDeux->suivant->suivant;
-			while(TasDeux->A->degre == TasDeux->suivant->A->degre ){
-				/*Ici il faut lier les deux Arbres pour n'en faire qu'un seul
-				 */
-				TasDeux->A = Lier(TasDeux->A,TasDeux->suivant->A);
-			}
-		}
-		return TasDeux;
-	} else{
-			Tas->A = ArbreB;
-			return Tas;
-	}
-}
-
-ArbreBinomial ExtraireMin(TasBinomial T){
+ArbreBinomial ExtraireMin(ArbreBinomial T){
     ArbreBinomial B, C;
     int cleMin = 10000000;
-    B = T->A;
-    C = T->A;
-    if(T->suivant != NULL){
-        B = ExtraireMin(T->suivant);
+    B = T;
+    C = T;
         while(B!=NULL){
             if(B->cle < cleMin){
                 cleMin = B->cle;
@@ -89,35 +50,85 @@ ArbreBinomial ExtraireMin(TasBinomial T){
             }
             B = B->pfd;
         }
-    }
     return C;
 }
-/*
-TasBinomial Fusionner(TasBinomial TasUn, TasBinomial TasDeux){
-    TasBinomial T = CreerTasBinomial();
-    while(TasUn != NULL){
-        if(TasUn->A->degre == TasDeux->A->degre){
-           // T = AjouterCle
+
+
+
+
+ArbreBinomial Fusionner(ArbreBinomial TasUn, ArbreBinomial TasDeux){
+    ArbreBinomial T = CreerArbreBinomial();
+    while(TasUn != NULL && TasDeux != NULL){
+        if(TasUn->degre == TasDeux->degre){
+            T = Lier(T,TasUn);
+			T = Lier(T,TasDeux);
+			TasUn = TasUn->pfd;
+			TasDeux = TasDeux->pfd;
+		}
+		else{
+			if(TasUn->degre < TasDeux->degre){
+				T = Lier(T,TasUn);
+				TasUn = TasUn->pfd;
+			}else{
+				T = Lier(T,TasDeux);
+				TasDeux = TasDeux->pfd;
+			}
+		}
+	}
 
 }
 
-TasBinomial Union(TasBinomial){
-
+ArbreBinomial Union(ArbreBinomial T1, ArbreBinomial T2){
+	ArbreBinomial T = CreerArbreBinomial();
+	ArbreBinomial x, Succ, Pred;
+	T = Fusionner(T1,T2);
+	if(T == NULL){
+		return T;
+	}else{
+		Pred = NULL;
+		x = T;
+		Succ = x->pfd;
+		while(Succ != NULL){
+			if((x->degre != Succ->degre) || (Succ->pfd->degre == x->degre) && 
+					(Succ->pfd->degre == x->degre)){
+				Pred = x;
+				x = Succ;
+			}else{
+				if(x->cle <= Succ->cle){
+				x->pfd = Succ->pfd;
+				Lier(Succ,x);
+				}else{
+					if(Pred == NULL){
+					T = Succ;
+					}else{
+						Pred->pfd = Succ;
+					}
+					Lier(x,Succ);
+					x=Succ;
+				}
+			}
+			Succ = x->pfd;
+		}
+		return T;
+	}
 }
 
-TasBinomial SupprimerMinTas(TasBinomial){
-
+ArbreBinomial DecrementerCle(ArbreBinomial T, ArbreBinomial x, int  k){
+	ArbreBinomial y,z;
+	int tmp;
+	if(k > x->cle){
+		return NULL;
+	}else{
+		x->cle = k;
+		y = x;
+		x = y->pere;
+		while((x != NULL) && (y->cle < x->cle)){
+			tmp = y->cle;
+			y->cle = x->cle;
+			x->cle = tmp;
+			y = x;
+			x = y->pere;
+		}
+		return T;
+	}
 }
-
-TasBinomial DecrementerCle(TasBinomial, ArbreBinomial){
-
-}
-*/
-int TasBinomialVide(TasBinomial T){
-	return (T->A->cle == 0);
-}
-
-
-/*Affiche un tas
- * Plus tard il faudra qu'il affiche par ordre croissant*/
-void AfficherTas(TasBinomial T){}
