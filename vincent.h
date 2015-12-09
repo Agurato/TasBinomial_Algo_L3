@@ -31,6 +31,8 @@ void displayHeap(BinomialHeap H);
 
 BHeap createBHeap();
 BHeap mergeBHeaps(BHeap H1, BHeap H2);
-BHeap joinBHeaps(BHeap H1, BHeap H2);
+BHeap BHeapUnion(BHeap H1, BHeap H2);
 BHeap insertBHeap(BHeap H1, BHeap H2);
 BHeap linkBHeaps(BHeap H1, BHeap H2);
+BHeap deleteBHeap(BHeap heap);
+void displayBHeap(BHeap heap, int current);

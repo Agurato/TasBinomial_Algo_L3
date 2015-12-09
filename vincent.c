@@ -45,12 +45,39 @@ int main(int argc, char const *argv[]) {
 	displayTree(T, 0);
 	printf("\n");
 	*/
+	/* Code de test avec tas en 1.4
+	BHeap heap = createBHeap();
+	heap->key = 4;
+	heap->son = createBHeap();
+	heap->son->key = 12;
+	heap->son->son = createBHeap();
+	heap->son->son->key = 70;
+	heap->son->brother = createBHeap();
+	heap->son->brother->key = 20;
 
-	BHeap A = createBHeap();
-	BHeap B = createBHeap();
-	B->key = 5;
-	A = linkBHeaps(A, B);
-	printf("A->key = %d\nA->son->key = %d\n", A->key, A->son->key);
+	BHeap heap2 = createBHeap();
+	heap2->key = 7;
+	heap2->son = createBHeap();
+	heap2->son->key = 11;
+	heap2->son->son = createBHeap();
+	heap2->son->son->key = 27;
+	heap2->son->brother = createBHeap();
+	heap2->son->brother->key = 10;
+
+	BHeap H = linkBHeaps(heap, heap2);
+	*/
+
+	BHeap H = NULL;
+	BHeap addHeap = createBHeap();
+
+	addHeap->key = 2;
+	H = insertBHeap(H, addHeap);
+	addHeap->key = 7;
+	H = insertBHeap(H, addHeap);
+	//addHeap->key = 3;
+	//H = insertBHeap(H, addHeap);
+	//displayBHeap(H, 0);
+	printf("\n");
 
 	return 0;
 }
@@ -208,8 +235,42 @@ BHeap createBHeap() {
 }
 
 BHeap mergeBHeaps(BHeap H1, BHeap H2) {
-	BHeap heap = createBHeap();
-	while((H1 != NULL) && (H2 != NULL)) {
+	BHeap heap = NULL;
+	BHeap temp;
+
+	if(H1 != NULL) {
+		if((H2 != NULL) && (H1->degree <= H2->degree)) {
+			heap = H1;
+		}
+		else if((H2 != NULL) && (H1->degree > H2->degree)) {
+			heap = H2;
+		}
+		else {
+			heap = H1;
+		}
+	}
+	else {
+		heap = H2;
+	}
+
+	while (H1 != NULL && H2 != NULL) {
+		if(H1->degree < H2->degree) {
+			H1 = H1->brother;
+		}
+		else if(H1->degree == H2->degree) {
+			temp = H1->brother;
+			H1->brother = H2;
+			H1 = temp;
+		}
+		else {
+			temp = H2->brother;
+			H2->brother = H1;
+			H2 = temp;
+		}
+	}
+
+	/*
+	while((emptyBHeap(H1)) && (emptyBHeap(H2))) {
 		if(H1->degree == H2->degree) {
 			heap = insertBHeap(heap, H1);
 			heap = insertBHeap(heap, H2);
@@ -226,20 +287,20 @@ BHeap mergeBHeaps(BHeap H1, BHeap H2) {
 		}
 	}
 
-	while(H1 != NULL) {
+	while(! emptyBHeap(H1)) {
 		heap = insertBHeap(heap, H1);
 		H1 = H1->brother;
 	}
-	while(H2 != NULL) {
+	while(! emptyBHeap(H2)) {
 		heap = insertBHeap(heap, H2);
 		H2 = H2->brother;
 	}
-
+	*/
 	return heap;
 }
 
-BHeap joinBHeaps(BHeap H1, BHeap H2) {
-	BHeap heap = createBHeap();
+BHeap BHeapUnion(BHeap H1, BHeap H2) {
+	BHeap heap = NULL;
 	BHeap prev, next, x;
 
 	heap = mergeBHeaps(H1, H2);
@@ -256,7 +317,7 @@ BHeap joinBHeaps(BHeap H1, BHeap H2) {
 			}
 			else if(x->key <= next->key) {
 				x->brother = next->brother;
-				linkBHeaps(next, x);
+				next = linkBHeaps(next, x);
 			}
 			else {
 				if(prev == NULL) {
@@ -265,7 +326,7 @@ BHeap joinBHeaps(BHeap H1, BHeap H2) {
 				else {
 					prev->brother = next;
 				}
-				linkBHeaps(x, next);
+				next = linkBHeaps(x, next);
 				x = next;
 			}
 			next = x->brother;
@@ -275,20 +336,27 @@ BHeap joinBHeaps(BHeap H1, BHeap H2) {
 	return heap;
 }
 
-BHeap insertBHeap(BHeap H1, BHeap H2) {
-	BHeap heap = createBHeap();
-	H2->father = NULL;
-	H2->son = NULL;
-	H2->brother = NULL;
-	H2->degree = 0;
+BHeap insertBHeap(BHeap H, BHeap x) {
+	BHeap heap = NULL;
+	x->father = NULL;
+	x->son = NULL;
+	x->brother = NULL;
+	x->degree = 0;
 
-	heap = H2;
-	heap = joinBHeaps(heap, H1);
+	heap = x;
+	H = BHeapUnion(H, heap);
 
-	return heap;
+	return H;
 }
 
 BHeap linkBHeaps(BHeap H1, BHeap H2) {
+	H2->father = H1;
+	H2->brother = H1->son;
+	H1->son = H2;
+	H1->degree ++;
+
+	return H1;
+	/*
 	if(H1->key < H2->key) {
 		H2->brother = H1->son;
 		H2->father = H1;
@@ -305,4 +373,47 @@ BHeap linkBHeaps(BHeap H1, BHeap H2) {
 
 		return H2;
 	}
+	*/
+}
+
+BHeap deleteBHeap(BHeap heap) {
+	if(heap != NULL) {
+		heap->son = deleteBHeap(heap->son);
+		heap->brother = deleteBHeap(heap->brother);
+		free(heap);
+		heap = NULL;
+	}
+	return heap;
+}
+
+void displayBHeap(BHeap heap, int current) {
+	if(heap != NULL) {
+		if(heap->key < 10) {
+			printf("-> 0%d ", heap->key);
+		}
+		else {
+			printf("-> %d ", heap->key);
+		}
+		if(heap->son != NULL) {
+			displayBHeap(heap->son, current+1);
+		}
+		if(heap->brother != NULL) {
+			printf("\n");
+			int i;
+			for(i=0 ; i<current ; i++) {
+				printf("      ");
+			}
+			displayBHeap(heap->brother, current);
+		}
+	}
+	/*
+	while(heap != NULL) {
+		printf("%d", heap->key);
+		if(heap->brother != NULL) {
+			printf(" --> ");
+		}
+		heap = heap->brother;
+	}
+	printf("\n");
+	*/
 }
