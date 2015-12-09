@@ -6,7 +6,7 @@ typedef struct noeud{
 
 
 ArbreBinomial CreerArbreBinomial();
-ArbreBinomial Inserer(ArbreBinomial T, int cle);
+ArbreBinomial Inserer(ArbreBinomial T,  ArbreBinomial x);
 ArbreBinomial Lier(ArbreBinomial, ArbreBinomial);
 ArbreBinomial AjouterCle(ArbreBinomial, ArbreBinomial);
 ArbreBinomial Union(ArbreBinomial T1, ArbreBinomial T2);

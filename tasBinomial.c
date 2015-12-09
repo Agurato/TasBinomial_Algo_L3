@@ -5,73 +5,71 @@
 ArbreBinomial CreerArbreBinomial(){
     ArbreBinomial A;
     A = malloc(sizeof(struct noeud));
-    A->degre = 0;
-    A->cle = 0;
-    A->pere = A->pfg = A->pfd = NULL;
     return A;
 }
 
-/*Fonctionne*/
 /*Voir s'il ne faut pas vérifier le cas que A non vide*/
-ArbreBinomial Inserer(ArbreBinomial T, int cle){
+ArbreBinomial Inserer(ArbreBinomial T, ArbreBinomial x){
 	ArbreBinomial T1 = CreerArbreBinomial();
-	ArbreBinomial x = CreerArbreBinomial();
 	x->pere = NULL;
 	x->pfg = NULL;
 	x->pfd = NULL;
 	x->degre = 0;
-	x->cle = cle;
-	T1 = Union(x,T);
+	T1 = x;
+	printf("T1->cle = %d",T1->cle);
+	T1 = Union(T1,T);
     return T1;
 }
 
 /* On lie deux arbres binomiaux
  * La racine d'un des arbres devient le fils gauche de l'autre arbre
- *
- * Fonctionne
  */
 ArbreBinomial Lier(ArbreBinomial A, ArbreBinomial B){
-	if(A->cle <= B->cle){
     	B->pere = A;
     	B->pfd = A->pfg;
   		A->pfg = B;
     	A->degre++;
     	return A;
-	}else{
-		A->pere = B;
-    	A->pfd = B->pfg;
-  		B->pfg = A;
-    	B->degre++;
-    	return B;
-	}
 }
 
 ArbreBinomial Fusionner(ArbreBinomial TasUn, ArbreBinomial TasDeux){
     ArbreBinomial T = CreerArbreBinomial();
+	//printf("TasDeux =  \n",TasDeux->cle);
     while(TasUn != NULL && TasDeux != NULL){
         if(TasUn->degre == TasDeux->degre){
-            T = Lier(T,TasUn);
-			T = Lier(T,TasDeux);
+            T = Inserer(T,TasUn);
+			T = Inserer(T,TasDeux);
 			TasUn = TasUn->pfd;
 			TasDeux = TasDeux->pfd;
 		}
 		else{
 			if(TasUn->degre < TasDeux->degre){
-				T = Lier(T,TasUn);
+				T = Inserer(T,TasUn);
 				TasUn = TasUn->pfd;
 			}else{
-				T = Lier(T,TasDeux);
+				T = Inserer(T,TasDeux);
 				TasDeux = TasDeux->pfd;
 			}
 		}
 	}
-
+	while(TasUn != NULL){
+			T = Inserer(T,TasUn);
+			TasUn = TasUn->pfd;
+	}
+	while(TasDeux != NULL){
+			T = Inserer(T,TasDeux);
+			TasDeux = TasDeux->pfd;
+	}
+	return T;
 }
 
 ArbreBinomial Union(ArbreBinomial T1, ArbreBinomial T2){
 	ArbreBinomial T = CreerArbreBinomial();
-	ArbreBinomial x, Succ, Pred;
+	ArbreBinomial x = CreerArbreBinomial();
+	ArbreBinomial Succ= CreerArbreBinomial();
+	ArbreBinomial Pred= CreerArbreBinomial();
 	T = Fusionner(T1,T2);
+
 	if(T == NULL){
 		return T;
 	}else{
@@ -79,7 +77,7 @@ ArbreBinomial Union(ArbreBinomial T1, ArbreBinomial T2){
 		x = T;
 		Succ = x->pfd;
 		while(Succ != NULL){
-			if((x->degre != Succ->degre) || (Succ->pfd->degre == x->degre) && 
+			if((x->degre != Succ->degre) || (Succ->pfd != NULL) && 
 					(Succ->pfd->degre == x->degre)){
 				Pred = x;
 				x = Succ;
