@@ -1,3 +1,5 @@
+#include <malloc.h>
+
 typedef struct node {
 	int degree;
 	int key;

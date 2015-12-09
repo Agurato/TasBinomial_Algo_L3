@@ -7,7 +7,7 @@ int main(int argc, char const *argv[]) {
 	BinomialTree T = insertKey(NULL, 1);
 	printf("T->key=%d / T->degree=%d\n", T->key, T->degree);
 	*/
-
+	/*
 	BinomialHeap H = createHeap();
 
 	BinomialTree T1 = createTree();
@@ -44,6 +44,13 @@ int main(int argc, char const *argv[]) {
 	BinomialTree T = linkTrees(T1, T2);
 	displayTree(T, 0);
 	printf("\n");
+	*/
+
+	BHeap A = createBHeap();
+	BHeap B = createBHeap();
+	B->key = 5;
+	A = linkBHeaps(A, B);
+	printf("A->key = %d\nA->son->key = %d\n", A->key, A->son->key);
 
 	return 0;
 }
@@ -275,7 +282,6 @@ BHeap insertBHeap(BHeap H1, BHeap H2) {
 	H2->brother = NULL;
 	H2->degree = 0;
 
-	heap->brother = heap;
 	heap = H2;
 	heap = joinBHeaps(heap, H1);
 

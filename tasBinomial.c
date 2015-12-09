@@ -5,6 +5,11 @@
 ArbreBinomial CreerArbreBinomial(){
     ArbreBinomial A;
     A = malloc(sizeof(struct noeud));
+    A->pere = NULL;
+    A->pfd = NULL;
+    A->pfg = NULL;
+    A->degre = 0;
+    A->cle = 0;
     return A;
 }
 
@@ -16,7 +21,7 @@ ArbreBinomial Inserer(ArbreBinomial T, ArbreBinomial x){
 	x->pfd = NULL;
 	x->degre = 0;
 	T1 = x;
-	printf("T1->cle = %d",T1->cle);
+	printf("T1->cle = %d\n",T1->cle);
 	T1 = Union(T1,T);
     return T1;
 }
@@ -72,23 +77,27 @@ ArbreBinomial Union(ArbreBinomial T1, ArbreBinomial T2){
 
 	if(T == NULL){
 		return T;
-	}else{
+	}
+    else{
 		Pred = NULL;
 		x = T;
 		Succ = x->pfd;
 		while(Succ != NULL){
-			if((x->degre != Succ->degre) || (Succ->pfd != NULL) && 
-					(Succ->pfd->degre == x->degre)){
+			if((x->degre != Succ->degre) || ((Succ->pfd != NULL) &&
+					(Succ->pfd->degre == x->degre))) {
 				Pred = x;
 				x = Succ;
-			}else{
-				if(x->cle <= Succ->cle){
-				x->pfd = Succ->pfd;
-				Lier(Succ,x);
-				}else{
-					if(Pred == NULL){
-					T = Succ;
-					}else{
+			}
+            else {
+				if(x->cle <= Succ->cle) {
+				    x->pfd = Succ->pfd;
+				    Lier(Succ,x);
+				}
+                else {
+					if(Pred == NULL) {
+					    T = Succ;
+					}
+                    else {
 						Pred->pfd = Succ;
 					}
 					Lier(x,Succ);
