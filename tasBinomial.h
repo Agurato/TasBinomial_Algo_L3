@@ -16,3 +16,4 @@ ArbreBinomial SupprimerMinTas(ArbreBinomial);
 ArbreBinomial DecrementerCle(ArbreBinomial T, ArbreBinomial x, int  k);
 int TasBinomialVide(ArbreBinomial);
 void AfficherTas(ArbreBinomial T);
+//ArbreBinomial insererTri(ArbreBinomial A1, ArbreBinomial A2);

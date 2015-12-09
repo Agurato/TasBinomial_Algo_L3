@@ -144,3 +144,23 @@ ArbreBinomial ExtraireMin(ArbreBinomial A){
 	}
 	return C;
 }
+/*
+ArbreBinomial insererTri(ArbreBinomial A1, ArbreBinomial A2) {
+	if(A1->cle < A2->cle) {
+		A2->pfd = A1->pfg;
+		A2->pere = A1;
+		A1->pfg = A2;
+		A1->degre ++;
+
+		return A1;
+	}
+	else {
+		A1->pfd = A2->pfg;
+		A1->pere = A2;
+		A2->pfg = A1;
+		A2->degre ++;
+
+		return A2;
+	}
+}
+*/
